@@ -9,17 +9,25 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function InstitutionChart({ dataPoints = [] }) {
+  // Hanya ambil 10 teratas untuk visualisasi chart
+  const displayData = dataPoints.slice(0, 10);
+
   const data = {
-    labels: dataPoints.map(item => item.label),
+    labels: displayData.map(item => item.label),
     datasets: [
       {
-        data: dataPoints.map(item => item.value),
+        data: displayData.map(item => item.value),
         backgroundColor: [
           '#991b1b', // red-800
           '#ef4444', // red-500
           '#fca5a5', // red-300
           '#450a0a', // red-950
           '#dc2626', // red-600
+          '#7f1d1d', // red-900
+          '#b91c1c', // red-700
+          '#f87171', // red-400
+          '#fecaca', // red-200
+          '#991b1b', // red-800 (repeat or add more unique colors)
         ],
         borderWidth: 2,
         borderColor: '#ffffff',

@@ -22,15 +22,21 @@ class GuestController extends Controller
             ['name' => $request->name, 'email' => $request->email, 'institution' => $request->institution]
         );
 
-        // 2. Simpan Data Kunjungan
+        // Trigger event jika visitor baru terdaftar
+        if ($visitor->wasRecentlyCreated) {
+            event(new \App\Events\VisitorRegistered($visitor));
+        }
+
+        // 2. Simpan Data Kunjungan dengan status 'pending'
         $visit = $visitor->visits()->create([
             'purpose' => $request->purpose,
             'is_urgent' => in_array($request->purpose, ['Komplain', 'Masalah', 'Urgent']), // Otomatis urgent
-            'status' => 'in',
+            'status' => 'pending', // Status pending sampai scan QR
+            'check_in_at' => null, // Belum check-in
         ]);
 
-        // 3. Broadcast ke Dashboard Admin secara Real-time
-        event(new \App\Events\GuestCheckedIn($visit));
+        // 3. Broadcast event visitor registered (bukan checked-in)
+        event(new \App\Events\VisitorRegistered($visitor));
 
         return back()->with('message', 'Berhasil mengisi buku tamu!');
     }

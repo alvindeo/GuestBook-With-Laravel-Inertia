@@ -31,6 +31,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Dashboard
                                 </NavLink>
                                 <NavLink
+                                    href={route('pendaftar')}
+                                    active={route().current('pendaftar')}
+                                >
+                                    Pendaftar
+                                </NavLink>
+                                <NavLink
                                     href={route('scanner')}
                                     active={route().current('scanner')}
                                 >
@@ -41,6 +47,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     active={route().current('laporan')}
                                 >
                                     Laporan
+                                </NavLink>
+                                <NavLink
+                                    href={route('tambah-user')}
+                                    active={route().current('tambah-user')}
+                                >
+                                    Tambah User
                                 </NavLink>
                             </div>
                         </div>

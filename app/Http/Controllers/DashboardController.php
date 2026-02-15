@@ -17,9 +17,11 @@ class DashboardController extends Controller
         // 2. Retensi (Loyalitas Tinggi - Tamu yang datang lebih dari sekali)
         $retensiCount = Visitor::has('visits', '>', 1)->count();
 
-        // 3. Aktif (Sedang Berkunjung)
+        // 3. Aktif (Sedang Berkunjung - sudah check-in tapi belum check-out)
         $aktifGuests = Visit::with('visitor')
             ->where('status', 'in')
+            ->whereNotNull('check_in_at')
+            ->whereNull('check_out_at')
             ->latest()
             ->get();
         $aktifCount = $aktifGuests->count();
@@ -38,15 +40,14 @@ class DashboardController extends Controller
             ];
         }
 
-        // 6. Data untuk Chart Instansi (Pie Chart)
+        // 6. Data untuk Chart Instansi (Seluruh Data untuk Modal)
         $instansiData = Visitor::select('institution', \DB::raw('count(*) as total'))
             ->groupBy('institution')
             ->orderBy('total', 'desc')
-            ->limit(5)
             ->get()
             ->map(function($item) {
                 return [
-                    'label' => $item->institution ?? 'Lainnya',
+                    'label' => $item->institution ?? 'Umum/Pribadi',
                     'value' => $item->total
                 ];
             });
