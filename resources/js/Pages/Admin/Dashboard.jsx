@@ -404,7 +404,7 @@ export default function Dashboard({ stats, chartData, instansiData }) {
                             </div>
                         ) : (
                             <div className="text-center py-10">
-                                <p className="text-gray-400 text-sm italic">There are currently no guests inside the building.</p>
+                                <p className="text-gray-400 text-sm italic">Tidak ada tamu yang sedang masuk.</p>
                             </div>
                         )}
                     </div>
