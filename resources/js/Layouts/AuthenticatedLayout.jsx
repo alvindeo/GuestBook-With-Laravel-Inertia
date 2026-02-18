@@ -37,12 +37,6 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Pendaftar
                                 </NavLink>
                                 <NavLink
-                                    href={route('scanner')}
-                                    active={route().current('scanner')}
-                                >
-                                    Scanner
-                                </NavLink>
-                                <NavLink
                                     href={route('laporan')}
                                     active={route().current('laporan')}
                                 >

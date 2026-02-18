@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link } from '@inertiajs/react';
 import '../../../css/welcome.css';
 
 export default function Welcome({ auth }) {
@@ -166,18 +166,7 @@ export default function Welcome({ auth }) {
             </div>
 
             <main className="main-content">
-                <div className="side-info">
-                    <div className="side-content">
-                        <h2>E-Tamu Telkom</h2>
-                        <p>Selamat datang di gedung Telkom Regional 4. Silakan isi buku tamu digital untuk kenyamanan kunjungan Anda.</p>
-                        <div className="info-stats">
-                            <div className="stat-item">
-                                <span className="stat-value">E-Tamu</span>
-                                <span className="stat-desc">Digital Guestbook</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {/* form */}
                 <div className="form-pane">
                     <div className="stepper">
                         <div className={`step-item ${currentStep >= 1 ? 'completed' : ''} ${currentStep === 1 ? 'active' : ''}`}>
@@ -206,7 +195,7 @@ export default function Welcome({ auth }) {
                                         autoComplete="tel"
                                         placeholder="Contoh: 08123456789"
                                         value={data.phone}
-                                        onChange={e => setData('phone', e.target.value)}
+                                        onChange={e => setData('phone', e.target.value.replace(/[^0-9]/g, ''))}
                                         onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), nextStep())}
                                     />
                                     {errors.phone && <span className="error-message">⚠️ {errors.phone}</span>}
@@ -237,8 +226,9 @@ export default function Welcome({ auth }) {
                                         type="text" 
                                         autoComplete="name"
                                         placeholder="Masukkan nama sesuai KTP"
+                                        className="uppercase"
                                         value={data.name}
-                                        onChange={e => setData('name', e.target.value)}
+                                        onChange={e => setData('name', e.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase())}
                                         onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), nextStep())}
                                     />
                                     {errors.name && <span className="error-message">⚠️ {errors.name}</span>}
@@ -297,6 +287,24 @@ export default function Welcome({ auth }) {
                             )}
                         </div>
                     </form>
+                </div>
+
+                {/* Scanner Link below Form */}
+                <div className="scanner-link-container">
+                    <Link 
+                        href={route('user.scanner')} 
+                        className="scanner-alt-btn"
+                    >
+                        <div className="scanner-icon-bg">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 00-1 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                            </svg>
+                        </div>
+                        <div className="scanner-link-text">
+                            <span className="text-sm font-bold uppercase tracking-wider">Sudah punya QR Code?</span>
+                            <span className="text-[10px] opacity-70 block font-medium">Klik di sini untuk Scan Mandiri</span>
+                        </div>
+                    </Link>
                 </div>
             </main>
 

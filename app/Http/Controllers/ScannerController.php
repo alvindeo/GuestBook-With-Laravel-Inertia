@@ -80,4 +80,77 @@ class ScannerController extends Controller
             'visitor' => $visitor,
         ]);
     }
+
+    /**
+     * Handle public scanner process
+     */
+    public function processPublicScan(Request $request)
+    {
+        $qrData = $request->input('qr_data');
+        
+        // 1. Cari berdasarkan barcode_token
+        $visit = Visit::where('barcode_token', $qrData)
+            ->whereDate('created_at', now()->toDateString()) // Harus di hari yang sama
+            ->first();
+
+        if (!$visit) {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR Code tidak valid, sudah kadaluarsa (hanya berlaku 1 hari), atau tidak ditemukan.'
+            ], 404);
+        }
+
+        $visitor = $visit->visitor;
+
+        // 2. Logika Check-In (Jika status masih 'pending')
+        if ($visit->status === 'pending') {
+            $visit->update([
+                'check_in_at' => now(),
+                'status' => 'in'
+            ]);
+
+            event(new \App\Events\VisitorCheckedIn($visit));
+
+            return response()->json([
+                'success' => true,
+                'action' => 'check-in',
+                'message' => "Selamat Datang, {$visitor->name}! Anda berhasil CHECK-IN.",
+                'visitor' => $visitor
+            ]);
+        }
+
+        // 3. Logika Check-Out (Jika status sudah 'in')
+        if ($visit->status === 'in') {
+            $checkIn = \Carbon\Carbon::parse($visit->check_in_at);
+            $checkOut = now();
+            
+            $visit->update([
+                'check_out_at' => $checkOut,
+                'status' => 'out',
+                'duration_minutes' => $checkIn->diffInMinutes($checkOut)
+            ]);
+
+            event(new \App\Events\VisitorCheckedOut($visit));
+
+            return response()->json([
+                'success' => true,
+                'action' => 'check-out',
+                'message' => "Terima Kasih, {$visitor->name}! Anda telah berhasil CHECK-OUT.",
+                'visitor' => $visitor
+            ]);
+        }
+
+        // 4. Jika sudah 'out' (Sudah digunakan 2x)
+        if ($visit->status === 'out') {
+            return response()->json([
+                'success' => false,
+                'message' => 'QR Code ini sudah digunakan untuk Check-in dan Check-out. Silakan daftar kembali untuk kunjungan berikutnya.'
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Status kunjungan tidak valid.'
+        ], 400);
+    }
 }

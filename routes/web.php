@@ -48,6 +48,14 @@ Route::get('/scan/{visitor}', [App\Http\Controllers\ScannerController::class, 's
     ->middleware(['auth', 'verified'])
     ->name('scanner.scan');
 
+// User Scanner (Public)
+Route::get('/self-scanner', function () {
+    return Inertia::render('user/Scanner');
+})->name('user.scanner');
+
+Route::post('/scan-process', [App\Http\Controllers\ScannerController::class, 'processPublicScan'])
+    ->name('scanner.process');
+
 // Pendaftar
 Route::get('/pendaftar', [App\Http\Controllers\PendaftarController::class, 'index'])
     ->middleware(['auth', 'verified'])
